@@ -1,0 +1,6 @@
+{
+  "name": "microstrip-filter-calculator-tests",
+  "private": true,
+  "description": "Headless tests for the calculation core of the Microstrip Filter Calculator plugin",
+  "scripts": { "test": "node run.js" }
+}
