@@ -111,13 +111,13 @@
     }
 
     // Determine normalized frequency ratio for steepened (m-derived) filter
+    var isSteep = (state.steep !== 'none') && (state.art === 't' || state.art === 'h');
     var norm = 1.25;
-    if (state.art === 'h' && fsHz > 0) norm = fgHz / fsHz;
-    if (state.art === 't' && fsHz > 0) norm = fsHz / fgHz;
+    if (isSteep && state.art === 'h' && fsHz > 0) norm = fgHz / fsHz;
+    if (isSteep && state.art === 't' && fsHz > 0) norm = fsHz / fgHz;
     res.norm = norm;
 
     // Determine m parameter
-    var isSteep = (state.steep !== 'none') && (state.art === 't' || state.art === 'h');
     var mVal = 0.6;
     if (isSteep && norm > 1) {
       var zw = Math.sqrt(norm * norm - 1) / norm;
@@ -147,7 +147,7 @@
     res.wahlschalt = wahlschalt;
 
     // Norm factor for steepening
-    var normTerm = (isSteep && norm > 1) ? (1 - Math.pow(0.6 / norm, 2)) : 0.64;
+    var normTerm = norm > 1 ? 1 - Math.pow(0.6 / norm, 2) : 0.64;
     if (normTerm <= 0.001) normTerm = 0.001;
 
     // Characteristic wave impedance Zo calculation from Re (PARAM.PAS lines 26-66)
@@ -452,7 +452,7 @@
 
           // Physical gap spacing s from odd/even mode ratio
           var rho = zoe / zoo;
-          var gap_s_mm = Math.max(0.18, Math.min(2.0, (0.15 + (rho - 1) * 0.42) * subH_m * 1e3));
+          var gap_s_mm = Math.max(0.18, Math.min(2.0, (0.15 + 0.42 / (rho - 1)) * subH_m * 1e3));
 
           // Physical length l = lambda_g / 4
           var lambda_g0 = (c_speed / f0) / Math.sqrt(ms_coupl.ereff);

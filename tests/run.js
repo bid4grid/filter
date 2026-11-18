@@ -44,6 +44,15 @@ test('m-derived: m from norm, tank values', () => {
   near(fd.elements[0].val / (c * fd.m), 1, 1e-9, 'Cqm');
   near(fd.elements[0].val2 / (l * (1 - fd.m * fd.m) / fd.m), 1, 1e-9, 'Lqm');
 });
+test('m-derived default termination factor matches norm=1.25 and m=0.6', () => {
+  const plain = make({ art: 't', tech: 'd', steep: 'none' }).fd;
+  near(plain.norm, 1.25, 1e-12);
+  near(plain.m, 0.6, 1e-12);
+  const steep = make({ art: 't', tech: 'd', steep: 'in', schaltIn: 'p', fs: 1250 });
+  const tm = 1 - (0.6 / 1.25) ** 2;
+  near(steep.fd.m, 0.6, 1e-12);
+  near(steep.fd.zo, steep.state.re / (1.25 * tm), 1e-9);
+});
 test('band-pass resonators resonate at f0', () => {
   const { core, fd } = make({ art: 'p', tech: 'd' });
   fd.lumped.forEach(el => {
@@ -73,6 +82,16 @@ test('clipped impedances are flagged', () => {
 test('Z-high / Z-low are used', () => {
   const a = make({ art: 't', tech: 's', zHigh: 100, zLow: 25 }).fd;
   near(a.ms_L.z, 100, 1e-9); near(a.ms_C.z, 25, 1e-9);
+});
+test('coupled-line gap decreases as even/odd impedance ratio increases', () => {
+  const weak = make({ art: 'p', tech: 's', fu: 990, fo: 1010 }).fd.coupledStages;
+  const strong = make({ art: 'p', tech: 's', fu: 800, fo: 1200 }).fd.coupledStages;
+  weak.forEach((stage, i) => {
+    const weakRho = stage.zoe / stage.zoo, strongRho = strong[i].zoe / strong[i].zoo;
+    assert.ok(strongRho > weakRho, 'stage ' + i + ' should have a higher ratio for tighter coupling');
+    assert.ok(strong[i].s_mm < stage.s_mm, 'stage ' + i + ' gap should shrink as coupling increases');
+  });
+  assert.ok(weak.every(stage => stage.s_mm <= 2), 'gap estimate must respect the documented upper bound');
 });
 test('open-end compensation shortens only the wide lines', () => {
   const off = make({ art: 't', tech: 's', endEffects: false }).fd, on = make({ art: 't', tech: 's', endEffects: true }).fd;
