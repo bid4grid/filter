@@ -1359,7 +1359,7 @@
         h('div', { class: 'mfc-brand' },
           h('div', {},
             h('h1', {}, CFG.theme.title || 'Microstrip Filter Calculator'),
-            h('span', { class: 'mfc-subtitle' }, 'Image-parameter filter design with Wheeler and Hammerstad-Jensen microstrip synthesis. Based on Ralf Offermann’s 1990 TH Köln diploma thesis (advisor: Prof. Scheidt). · v1.3.8')
+            h('span', { class: 'mfc-subtitle' }, 'Image-parameter filter design')
           )
         ),
         h('div', { class: 'mfc-user-meta' },
