@@ -1367,7 +1367,7 @@
           CFG.homeUrl ? h('a', { href: CFG.homeUrl }, 'Home') : null,
           CFG.logout ? h('a', { href: CFG.logout }, 'Log out') : null,
           h('button', {
-            class: 'btn sm outline',
+            class: 'btn sm outline mfc-print-header',
             style: 'margin-left:10px;',
             title: 'Print formatted engineering lab report or export to PDF',
             onclick: function () { window.print(); }
@@ -1479,6 +1479,11 @@
             else window.prompt('Copy this link:', link);
           }
         }, '🔗 Copy link'),
+        h('button', {
+          class: 'btn sm outline mfc-print-mobile',
+          title: 'Print formatted engineering lab report or export to PDF',
+          onclick: function () { window.print(); }
+        }, '📄 Print Lab Report'),
         h('input', {
           type: 'file', accept: '.json,application/json', style: 'display:none', 'aria-label': 'Load design file',
           onchange: function (e) {

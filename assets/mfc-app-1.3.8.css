@@ -95,6 +95,10 @@ body.mfc-standalone,
   text-decoration: underline;
 }
 
+.mfc-app-container button.btn.mfc-print-mobile {
+  display: none;
+}
+
 /* Navigation Bar Container */
 .mfc-nav-container {
   position: sticky;
@@ -593,8 +597,18 @@ table.mfc-table tr:hover td {
   .mfc-header {
     flex-direction: column;
     align-items: flex-start;
-    padding: 12px 14px;
-    gap: 8px;
+    padding: 10px 14px;
+    gap: 0;
+  }
+  .mfc-header h1 {
+    font-size: 17px;
+    white-space: nowrap;
+  }
+  .mfc-header .mfc-subtitle {
+    display: none;
+  }
+  .mfc-header .mfc-print-header {
+    display: none;
   }
   .mfc-user-meta {
     width: 100%;
@@ -639,6 +653,9 @@ table.mfc-table tr:hover td {
   .mfc-nav .mfc-tab-icon { font-size: 19px; line-height: 1; }
   .mfc-nav .mfc-tab-full { display: none; }
   .mfc-nav .mfc-tab-short { display: block; }
+  .mfc-app-container button.btn.mfc-print-mobile {
+    display: inline-flex;
+  }
 }
 
 /* Printable Engineering Datasheet & Report Styling */
