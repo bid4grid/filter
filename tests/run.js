@@ -93,6 +93,14 @@ test('coupled-line gap decreases as even/odd impedance ratio increases', () => {
   });
   assert.ok(weak.every(stage => stage.s_mm <= 2), 'gap estimate must respect the documented upper bound');
 });
+test('coupled-line element data includes the estimated physical gap', () => {
+  const { fd } = make({ art: 'p', tech: 's' });
+  assert.ok(fd.elements.length > 0);
+  fd.elements.forEach((stage, i) => {
+    assert.ok(Number.isFinite(stage.s_mm) && stage.s_mm > 0, 'stage ' + i + ' needs a positive gap');
+    near(stage.s_mm, fd.coupledStages[i].s_mm, 0);
+  });
+});
 test('open-end compensation shortens only the wide lines', () => {
   const off = make({ art: 't', tech: 's', endEffects: false }).fd, on = make({ art: 't', tech: 's', endEffects: true }).fd;
   off.elements.forEach((e, i) => {

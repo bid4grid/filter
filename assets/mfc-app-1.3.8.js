@@ -2143,6 +2143,7 @@
 
     // VIEW: Component Table Tab
     if (state.tab === 'table') {
+      var hasGapColumn = state.tech === 's' && state.art === 'p' && filterData.elements.some(function (el) { return el.s_mm != null; });
       var tableCard = h('div', { class: 'card' },
         h('div', { style: 'display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;' },
           h('h2', { style: 'margin:0;' }, 'Component Values & Microstrip Geometries'),
@@ -2151,12 +2152,14 @@
             title: 'Export table of synthesized element values and physical dimensions as CSV',
             onclick: function () {
               var rows = [['Index', 'Name', 'Topology Role', 'Discrete Value', 'Width w (mm)', 'Length l (mm)', 'Impedance ZL']];
+              if (hasGapColumn) rows[0].push('Gap s (mm)');
               filterData.elements.forEach(function (el) {
                 var dVal = elemValueText(el);
                 var wVal = (el.w_mm ? el.w_mm.toFixed(2) : (el.isSeries ? filterData.ms_L.w_mm.toFixed(2) : filterData.ms_C.w_mm.toFixed(2)));
                 var lVal = (el.l_mm ? el.l_mm.toFixed(2) : (el.isSeries ? filterData.ll_mm.toFixed(2) : filterData.lc_mm.toFixed(2)));
                 var zVal = elemLineZ(el, filterData);
                 rows.push([el.index, el.name, el.type, dVal, wVal, lVal, zVal]);
+                if (hasGapColumn) rows[rows.length - 1].push(el.s_mm.toFixed(2));
               });
               var csvQuote = function (v) { var s = String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
               var csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + rows.map(function (e) { return e.map(csvQuote).join(','); }).join('\n');
@@ -2178,6 +2181,7 @@
                 h('th', {}, 'Lumped Value'),
                 h('th', {}, 'Microstrip Width (w)'),
                 h('th', {}, 'Physical Length (l)'),
+                hasGapColumn ? h('th', {}, 'Coupling Gap (s)') : null,
                 h('th', {}, 'Impedance ZL')
               )
             ),
@@ -2196,6 +2200,7 @@
                   h('td', {}, discStr),
                   h('td', {}, wMm),
                   h('td', {}, lMm),
+                  hasGapColumn ? h('td', {}, el.s_mm.toFixed(2) + ' mm') : null,
                   h('td', {}, zLine)
                 );
               })
@@ -2282,6 +2287,7 @@
               h('th', { style: 'padding:4px 6px; text-align:left;' }, 'Lumped Value'),
               h('th', { style: 'padding:4px 6px; text-align:left;' }, 'Width w (mm)'),
               h('th', { style: 'padding:4px 6px; text-align:left;' }, 'Length l (mm)'),
+              hasGapColumn ? h('th', { style: 'padding:4px 6px; text-align:left;' }, 'Coupling Gap s (mm)') : null,
               h('th', { style: 'padding:4px 6px; text-align:left;' }, 'Impedance ZL')
             )
           ),
@@ -2299,6 +2305,7 @@
                 h('td', { style: 'padding:3px 6px;' }, dVal),
                 h('td', { style: 'padding:3px 6px;' }, wVal),
                 h('td', { style: 'padding:3px 6px;' }, lVal),
+                hasGapColumn ? h('td', { style: 'padding:3px 6px;' }, el.s_mm.toFixed(2) + ' mm') : null,
                 h('td', { style: 'padding:3px 6px;' }, zVal)
               );
             })
