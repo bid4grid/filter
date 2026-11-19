@@ -507,9 +507,14 @@
       ctx.strokeStyle = isDark ? '#64748b' : '#94a3b8';
       ctx.beginPath();
       ctx.moveTo(curXc + 4, groundY);
-      ctx.lineTo(w - 70, groundY);
+      ctx.lineTo(curXc + 25 + items.length * stepX + 11, groundY);
       ctx.stroke();
 
+      ctx.strokeStyle = primaryColor;
+      ctx.beginPath();
+      ctx.moveTo(curXc + 4, midY);
+      ctx.lineTo(curXc + 25, midY);
+      ctx.stroke();
       curXc += 25;
 
       items.forEach(function (el, index) {
@@ -547,7 +552,7 @@
             ctx.lineWidth = 2.2;
             for (var bi = 0; bi < 2; bi++) {
               ctx.beginPath();
-              ctx.arc(midElemX - 6 + bi * 12, midY + 14, 5, Math.PI, 0, false);
+              ctx.arc(midElemX - 6 + bi * 12, midY + 14, 6, Math.PI, 0, false);
               ctx.stroke();
             }
 
@@ -618,7 +623,7 @@
             // Standard Single Series element
             ctx.beginPath();
             ctx.moveTo(curXc, midY);
-            ctx.lineTo(midElemX - 18, midY);
+            ctx.lineTo(midElemX - (el.name.indexOf('L') !== -1 ? 18 : 4), midY);
             ctx.stroke();
 
             if (el.name.indexOf('L') !== -1) {
@@ -655,7 +660,7 @@
             ctx.strokeStyle = primaryColor;
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(midElemX + 18, midY);
+            ctx.moveTo(midElemX + (el.name.indexOf('L') !== -1 ? 18 : 4), midY);
             ctx.lineTo(curXc + stepX, midY);
             ctx.stroke();
           }
@@ -734,6 +739,12 @@
 
           } else if (el.val2) {
             // Series LC tank in shunt branch
+            ctx.strokeStyle = primaryColor;
+            ctx.beginPath();
+            ctx.moveTo(shuntX, midY + 18);
+            ctx.lineTo(shuntX, elemCenterY - 16);
+            ctx.stroke();
+
             // Top capacitor
             ctx.strokeStyle = capacitorColor;
             ctx.lineWidth = 2.5;
@@ -749,7 +760,7 @@
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(shuntX, elemCenterY - 8);
-            ctx.lineTo(shuntX, elemCenterY + 4);
+            ctx.lineTo(shuntX, elemCenterY + 5);
             ctx.stroke();
 
             // Bottom inductor coils
@@ -773,13 +784,19 @@
             ctx.strokeStyle = primaryColor;
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(shuntX, elemCenterY + 28);
+            ctx.moveTo(shuntX, elemCenterY + 25);
             ctx.lineTo(shuntX, groundY);
             ctx.stroke();
 
           } else {
             // Standard Single Shunt element
-            if (el.name.indexOf('C') !== -1) {
+            var isCapacitor = el.name.indexOf('C') !== -1;
+            ctx.strokeStyle = primaryColor;
+            ctx.beginPath();
+            ctx.moveTo(shuntX, midY + 18);
+            ctx.lineTo(shuntX, elemCenterY - (isCapacitor ? 4 : 18));
+            ctx.stroke();
+            if (isCapacitor) {
               // Shunt Capacitor
               ctx.strokeStyle = capacitorColor;
               ctx.lineWidth = 2.5;
@@ -811,7 +828,7 @@
             ctx.strokeStyle = primaryColor;
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(shuntX, elemCenterY + 15);
+            ctx.moveTo(shuntX, elemCenterY + (isCapacitor ? 4 : 18));
             ctx.lineTo(shuntX, groundY);
             ctx.stroke();
           }
@@ -975,9 +992,9 @@
       ctx.textAlign = 'right';
       if (isSParam) {
         var sVal = -valY;
-        ctx.fillText(sVal.toFixed(0) + ' dB', margin.left - 8, yPos + 4);
+        ctx.fillText(sVal.toFixed(0) + (isNeper ? ' Np' : ' dB'), margin.left - 8, yPos + 4);
       } else {
-        ctx.fillText((maxY - valY).toFixed(0) + (isNeper ? ' N' : ' dB'), margin.left - 8, yPos + 4);
+        ctx.fillText((maxY - valY).toFixed(0) + (isNeper ? ' Np' : ' dB'), margin.left - 8, yPos + 4);
       }
     }
 
@@ -1010,7 +1027,7 @@
 
     // Band-edge / cutoff markers
     var edges = (state.art === 'p') ? [['fu', fuPlot], ['fo', foPlot]] : [['fc', cutoffHz]];
-    edges.forEach(function (ed) {
+    edges.forEach(function (ed, index) {
       var ex = margin.left + (ed[1] / maxFreqHz) * plotW;
       ctx.strokeStyle = '#0284c7';
       ctx.lineWidth = 1.6;
@@ -1022,8 +1039,8 @@
       ctx.setLineDash([]);
       ctx.fillStyle = '#0284c7';
       ctx.font = '11px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(ed[0] + ' = ' + fmtFreq(ed[1]), ex, margin.top - 8);
+      ctx.textAlign = state.art === 'p' ? (index === 0 ? 'right' : 'left') : 'center';
+      ctx.fillText(ed[0] + ' = ' + fmtFreq(ed[1]), ex + (state.art === 'p' ? (index === 0 ? -6 : 6) : 0), margin.top - 8);
     });
 
     // Exact response from the synthesized circuit (ABCD cascade, source Re, load Ra)
@@ -1032,8 +1049,9 @@
     var yFor = function (vAbs) { return margin.top + Math.min(1, Math.max(0, vAbs / maxY)) * plotH; };
     var addPts = function (r, p21, p11, x) {
       if (isSParam) {
-        p21.push({ x: x, y: yFor(Math.abs(r.s21dB)) });
-        p11.push({ x: x, y: yFor(Math.abs(r.s11dB)) });
+        var dbPerNeper = 20 / Math.LN10;
+        p21.push({ x: x, y: yFor(Math.abs(r.s21dB) / (isNeper ? dbPerNeper : 1)) });
+        p11.push({ x: x, y: yFor(Math.abs(r.s11dB) / (isNeper ? dbPerNeper : 1)) });
       } else {
         var aVal = isNeper ? r.aNep : r.aDb;
         p21.push({ x: x, y: margin.top + plotH - Math.min(1, Math.max(0, aVal / maxY)) * plotH });
@@ -1326,6 +1344,36 @@
 
   // --- SPA VIEW RENDERER ---
 
+  function preserveFocusedInput(target, input, replacement) {
+    if (!replacement || replacement.tagName !== 'INPUT' || replacement.type !== input.type) return false;
+    var oldPath = [], newPath = [], node;
+    for (node = input; node; node = node.parentNode) {
+      oldPath.unshift(node);
+      if (node === container) break;
+    }
+    for (node = replacement; node; node = node.parentNode) {
+      newPath.unshift(node);
+      if (node === target) break;
+    }
+    if (oldPath[0] !== container || newPath[0] !== target || oldPath.length !== newPath.length) return false;
+    for (var i = 1; i < oldPath.length; i++) {
+      if (oldPath[i].nodeName !== newPath[i].nodeName) return false;
+    }
+    for (var j = 0; j < oldPath.length - 1; j++) {
+      var parent = oldPath[j], keep = oldPath[j + 1], fresh = newPath[j], freshKeep = newPath[j + 1];
+      Array.prototype.slice.call(parent.childNodes).forEach(function (child) {
+        if (child !== keep) parent.removeChild(child);
+      });
+      var after = false;
+      Array.prototype.slice.call(fresh.childNodes).forEach(function (child) {
+        if (child === freshKeep) after = true;
+        else if (after) parent.appendChild(child);
+        else parent.insertBefore(child, keep);
+      });
+    }
+    return true;
+  }
+
   function render() {
     // keep keyboard focus and scroll position across the full re-render (typing in a field must not lose focus)
     var focusIdx = -1, selS = null, selE = null, keepY = window.pageYOffset;
@@ -1334,7 +1382,19 @@
       focusIdx = Array.prototype.indexOf.call(container.querySelectorAll('input,select,textarea'), ae);
       try { selS = ae.selectionStart; selE = ae.selectionEnd; } catch (e1) { selS = null; }
     }
-    renderInner();
+    var editingNumber = focusIdx >= 0 && ae.tagName === 'INPUT' && ae.type === 'number';
+    if (editingNumber) {
+      var target = document.createElement('div');
+      renderInner(target);
+      var replacement = target.querySelectorAll('input,select,textarea')[focusIdx];
+      if (preserveFocusedInput(target, ae, replacement)) {
+        window.scrollTo(window.pageXOffset, keepY);
+        return;
+      }
+      container.replaceChildren.apply(container, Array.prototype.slice.call(target.childNodes));
+    } else {
+      renderInner(container);
+    }
     if (focusIdx >= 0) {
       var all = container.querySelectorAll('input,select,textarea');
       var fe = all[focusIdx];
@@ -1346,8 +1406,8 @@
     window.scrollTo(window.pageXOffset, keepY);
   }
 
-  function renderInner() {
-    container.innerHTML = '';
+  function renderInner(target) {
+    target.innerHTML = '';
     var filterData = calcFilter();
 
     // App Wrapper
@@ -1774,7 +1834,7 @@
               max: '500',
               value: state.re,
               oninput: function (e) {
-                state.re = parseFloat(e.target.value) || 50;
+                state.re = parseFloat(e.target.value) || 0;
                 render();
               }
             })
@@ -1808,7 +1868,7 @@
               disabled: state.autoRa,
               value: state.autoRa ? filterData.matchedRa.toFixed(1) : state.ra,
               oninput: function (e) {
-                state.ra = parseFloat(e.target.value) || 50;
+                state.ra = parseFloat(e.target.value) || 0;
                 render();
               }
             }),
@@ -1939,7 +1999,7 @@
                 max: '12.00',
                 placeholder: 'Permittivity εr',
                 value: state.er,
-                oninput: function (e) { state.er = parseFloat(e.target.value) || 3.55; state.substrate = 'custom'; render(); }
+                oninput: function (e) { state.er = parseFloat(e.target.value) || 0; state.substrate = 'custom'; render(); }
               })
             ),
             h('div', { style: 'margin-top:8px' }, labelWithHelp('Substrate Height h (mm):', 'Substrate height', 'Thickness of the dielectric between the strip and the ground plane. Together with εr it sets the line width needed for a given impedance.')),
@@ -1949,7 +2009,7 @@
               min: '0.1',
               max: '5.0',
               value: state.h,
-              oninput: function (e) { state.h = parseFloat(e.target.value) || 1.0; render(); }
+              oninput: function (e) { state.h = parseFloat(e.target.value) || 0; render(); }
             })
           ) : null,
 
@@ -1959,11 +2019,11 @@
             h('div', { class: 'grid-2' },
               h('input', {
                 type: 'number', step: '5', min: '60', max: '200', value: state.zHigh, 'aria-label': 'Impedance of the narrow inductive line in ohm',
-                oninput: function (e) { state.zHigh = parseFloat(e.target.value) || 120; render(); }
+                oninput: function (e) { state.zHigh = parseFloat(e.target.value) || 0; render(); }
               }),
               h('input', {
                 type: 'number', step: '1', min: '8', max: '40', value: state.zLow, 'aria-label': 'Impedance of the wide capacitive line in ohm',
-                oninput: function (e) { state.zLow = parseFloat(e.target.value) || 20; render(); }
+                oninput: function (e) { state.zLow = parseFloat(e.target.value) || 0; render(); }
               })
             )
           ) : null,
@@ -2167,7 +2227,7 @@
           h('strong', {}, 'Frequency Response Interpretation: '),
           (state.plotMode === 's_param' ?
             'S21 (blue) is transmission: 0 dB means everything passes, so it should stay near 0 dB in the passband and fall off in the stopband. S11 (orange) is return loss, the part of the signal reflected back at the input: lower is better (−20 dB means about 1% of the power is reflected). In the stopband S11 rises to 0 dB because the filter reflects what it blocks.' :
-            'a(f) is the insertion loss of the filter in dB: near 0 dB in the passband, rising in the stopband (higher means more rejection).') +
+            'a(f) is the insertion loss of the filter in ' + (state.dbScale === 'neper' ? 'Nepers' : 'dB') + ': near zero in the passband, rising in the stopband (higher means more rejection).') +
           (state.showTline && core.hasTlineModel(filterData) ?
             ' Dashed curves show the real stepped-impedance microstrip layout built from ideal lossless lines. Compared with the lumped prototype, expect an earlier roll-off and a repeated passband at higher frequency, where the lines approach half a wavelength.' : '') +
           ((state.steep !== 'none' && (state.art === 't' || state.art === 'h')) ?
@@ -2372,14 +2432,14 @@
     );
     root.appendChild(printReport);
     if (walkthroughDialog) root.appendChild(walkthroughDialog);
-    container.appendChild(root);
+    target.appendChild(root);
 
     // Accessibility pass: tab semantics and accessible names for form controls
-    Array.prototype.forEach.call(container.querySelectorAll('.mfc-nav button'), function (b) {
+    Array.prototype.forEach.call(target.querySelectorAll('.mfc-nav button'), function (b) {
       b.setAttribute('role', 'tab');
       b.setAttribute('aria-selected', b.classList.contains('on') ? 'true' : 'false');
     });
-    Array.prototype.forEach.call(container.querySelectorAll('.field'), function (f) {
+    Array.prototype.forEach.call(target.querySelectorAll('.field'), function (f) {
       var lab = f.querySelector('label');
       if (!lab) return;
       var text = lab.textContent.replace(/\s+/g, ' ').trim().replace(/:$/, '');

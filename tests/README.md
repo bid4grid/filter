@@ -14,4 +14,8 @@ What is covered:
 * input checks and feasibility warnings
 * a sweep over all 768 topology / technology / order combinations, plus degenerate input (zero frequency, zero height, ...)
 
-The user interface (`assets/mfc-app-<version>.js`) is not unit-tested; check it in a browser with `preview.html`.
+The user interface (`assets/mfc-app-<version>.js`) is not unit-tested; check it in a browser with `index.html`. In particular:
+
+* Enter and edit decimal input values, and check that invalid values show errors.
+* Inspect discrete low-pass, high-pass, band-pass and m-derived schematic connections.
+* Check narrow band-edge labels on both plots, and switch the response plot between dB and Neper scales in both modes.

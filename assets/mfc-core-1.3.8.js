@@ -977,6 +977,10 @@
     if (micro) {
       if (!(parseFloat(state.er) >= 1)) add('error', 'Substrate permittivity εr must be 1 or larger.');
       if (!(parseFloat(state.h) > 0)) add('error', 'Substrate height h must be greater than 0 mm.');
+      if (state.art !== 'p' && !(state.zHigh >= 60 && state.zHigh <= 200))
+        add('error', 'High-impedance line must be between 60 and 200 Ω; calculations use 120 Ω until corrected.');
+      if (state.art !== 'p' && !(state.zLow >= 8 && state.zLow <= 40))
+        add('error', 'Low-impedance line must be between 8 and 40 Ω; calculations use 20 Ω until corrected.');
     }
 
     if (micro && isFinite(fgHz) && (fgHz > 0 || fuHz > 0)) {

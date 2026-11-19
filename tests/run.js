@@ -83,6 +83,14 @@ test('Z-high / Z-low are used', () => {
   const a = make({ art: 't', tech: 's', zHigh: 100, zLow: 25 }).fd;
   near(a.ms_L.z, 100, 1e-9); near(a.ms_C.z, 25, 1e-9);
 });
+test('out-of-range line impedances report their fallback values', () => {
+  const { fd } = make({ art: 't', tech: 's', zHigh: 0, zLow: 41 });
+  assert.ok(fd.warnings.some(w => w.level === 'error' && /High-impedance.*120 Ω/.test(w.text)));
+  assert.ok(fd.warnings.some(w => w.level === 'error' && /Low-impedance.*20 Ω/.test(w.text)));
+  near(fd.ms_L.z, 120, 0); near(fd.ms_C.z, 20, 0);
+  const valid = make({ art: 't', tech: 's', zHigh: 60, zLow: 40 }).fd;
+  assert.ok(!valid.warnings.some(w => /(?:High|Low)-impedance line must/.test(w.text)));
+});
 test('coupled-line gap decreases as even/odd impedance ratio increases', () => {
   const weak = make({ art: 'p', tech: 's', fu: 990, fo: 1010 }).fd.coupledStages;
   const strong = make({ art: 'p', tech: 's', fu: 800, fo: 1200 }).fd.coupledStages;
