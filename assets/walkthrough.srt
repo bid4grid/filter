@@ -1,0 +1,361 @@
+1
+00:00:01,000 --> 00:00:03,903
+Filter design means juggling formulas:
+
+2
+00:00:04,003 --> 00:00:10,226
+prototype elements, impedance matching,
+microstrip dimensions, and the response.
+
+3
+00:00:10,326 --> 00:00:20,580
+This calculator handles it all in one
+page, for microstrip and discrete LC
+filters, based on a 1990 thesis at TH Köln.
+
+4
+00:00:20,680 --> 00:00:23,900
+Five pages, five views of the same design.
+
+5
+00:00:26,000 --> 00:00:28,062
+Start on Synthesis.
+
+6
+00:00:28,162 --> 00:00:33,777
+Choose the technology, the response type,
+the topology, and the frequency.
+
+7
+00:00:33,877 --> 00:00:41,887
+Here, a microstrip low-pass at 1
+gigahertz, pi to pi, four sections, with 50
+ohms at both ends.
+
+8
+00:00:41,987 --> 00:00:45,208
+The calculator builds the ladder instantly.
+
+9
+00:00:45,308 --> 00:00:48,142
+It starts from the prototype elements:
+
+10
+00:00:48,242 --> 00:00:53,317
+Cp is 1 over omega-c Z-zero, and Lp is
+Z-zero over omega-c.
+
+11
+00:00:53,417 --> 00:00:59,881
+For a plain pi ladder, Z-zero is 0.8
+times source resistance, 40 ohms.
+
+12
+00:00:59,981 --> 00:01:08,917
+That gives 3.98 picofarads for end
+capacitors, and 12.73 nanohenries for
+series inductors, twice Lp.
+
+13
+00:01:09,017 --> 00:01:12,315
+The interior shunt capacitor is doubled too:
+
+14
+00:01:12,415 --> 00:01:13,551
+at 7.96 picofarads.
+
+15
+00:01:13,651 --> 00:01:14,632
+Five elements:
+
+16
+00:01:14,732 --> 00:01:17,335
+three capacitors and two inductors.
+
+17
+00:01:17,435 --> 00:01:23,900
+You can also pick T topologies, high-pass or
+band-pass responses, and steepened ends.
+
+18
+00:01:26,000 --> 00:01:28,356
+Now the microstrip realization.
+
+19
+00:01:28,456 --> 00:01:35,884
+Inductors become narrow, high-impedance
+lines, and capacitors become wide, low-
+impedance lines.
+
+20
+00:01:35,984 --> 00:01:45,075
+On one-millimeter RO4003C, a 120-ohm line is
+just 0.34 millimeters wide, and a 20-ohm
+line is 7.86 millimeters wide.
+
+21
+00:01:45,175 --> 00:01:51,414
+The widths come from the Hammerstad and
+Jensen model for effective permittivity.
+
+22
+00:01:51,514 --> 00:01:56,881
+Lengths follow from the element values, with
+first-order corrections.
+
+23
+00:01:56,981 --> 00:02:04,725
+The fifty-ohm feed lines are 2.25
+millimeters wide, and the whole layout is
+137.8 millimeters long.
+
+24
+00:02:04,825 --> 00:02:07,815
+The calculator also checks feasibility.
+
+25
+00:02:07,915 --> 00:02:19,384
+Here the middle capacitor section is 36
+millimeters, longer than a wavelength over
+eight, so it warns that the lumped
+approximation is poor there.
+
+26
+00:02:19,484 --> 00:02:23,900
+You can also shorten open ends by the
+fringing extension.
+
+27
+00:02:26,000 --> 00:02:30,568
+The Frequency Response page uses an exact
+network analysis.
+
+28
+00:02:30,668 --> 00:02:41,646
+Every element becomes a two-by-two ABCD
+matrix, the matrices are multiplied in
+signal order, and S21 and S11 come straight
+from the product.
+
+29
+00:02:41,746 --> 00:02:44,970
+The blue curve is the ideal lumped ladder:
+
+30
+00:02:45,070 --> 00:02:54,465
+minus three decibels at 0.95 gigahertz, 5.6
+decibels down at the nominal cutoff, and
+minus 42 decibels at two gigahertz.
+
+31
+00:02:54,565 --> 00:02:56,997
+Dashed curve shows return loss.
+
+32
+00:02:57,097 --> 00:03:05,384
+Now switch on the microstrip overlay, which
+uses ideal transmission-line sections
+instead of lumped parts.
+
+33
+00:03:05,484 --> 00:03:16,225
+The edge moves down to 0.74 gigahertz, the
+best rejection is about minus 29 decibels,
+and a spurious passband appears near 2.3
+gigahertz.
+
+34
+00:03:16,325 --> 00:03:23,900
+That is the price of stepped-impedance
+lines, and the overlay shows it before you
+build anything.
+
+35
+00:03:26,000 --> 00:03:27,749
+Need a sharper skirt?
+
+36
+00:03:27,849 --> 00:03:36,905
+Steepening replaces the end elements with LC
+tanks that place an attenuation pole just
+above the cutoff.
+
+37
+00:03:37,005 --> 00:03:45,885
+Set the pole at 1.3 gigahertz, so the ratio
+is 1.3, and the derivation parameter m comes
+out at 0.639.
+
+38
+00:03:45,985 --> 00:03:55,569
+The end elements become 2 picofarads in
+series with 7.49 nanohenries, and the
+interior values change slightly.
+
+39
+00:03:55,669 --> 00:03:57,242
+Compare the curves:
+
+40
+00:03:57,342 --> 00:04:04,550
+at 1.2 gigahertz the plain filter is 16
+decibels down, and the steepened one is 35.
+
+41
+00:04:04,650 --> 00:04:07,367
+The loss at cutoff improves too.
+
+42
+00:04:07,467 --> 00:04:13,882
+The same idea works for high-pass filters,
+with the pole below the cutoff.
+
+43
+00:04:13,982 --> 00:04:18,900
+The price is a stopband that rises again
+beyond the pole.
+
+44
+00:04:21,000 --> 00:04:29,350
+For band-pass filters, the calculator
+designs parallel-coupled microstrip lines,
+using Cohn's method.
+
+45
+00:04:29,450 --> 00:04:35,876
+Here the band is 900 to 1100 megahertz, a
+twenty percent fractional bandwidth.
+
+46
+00:04:35,976 --> 00:04:50,267
+Each coupled section is a quarter
+wavelength, 44.9 millimeters, and the layout
+is the classic edge-coupled staircase, each
+resonator offset by one strip width plus one
+gap.
+
+47
+00:04:50,367 --> 00:04:56,960
+The even- and odd-mode impedances come from
+the prototype coupling coefficients:
+
+48
+00:04:57,060 --> 00:05:02,733
+67.8 and 30 ohms for end sections, 50.9
+and 33.1 in the middle.
+
+49
+00:05:02,833 --> 00:05:06,414
+That sets gaps of 0.48 and 0.93 millimeters.
+
+50
+00:05:06,514 --> 00:05:13,776
+The response shows the passband between the
+band edges, with steep skirts on both sides.
+
+51
+00:05:13,876 --> 00:05:23,900
+The default band, 800 to 1200 megahertz, is
+flagged, because forty-one percent bandwidth
+is too wide for these equations.
+
+52
+00:05:26,000 --> 00:05:31,275
+The Wave Impedance page explains how the
+termination is chosen.
+
+53
+00:05:31,375 --> 00:05:44,926
+The image impedance of a T section falls to
+zero at cutoff, a pi section rises toward
+infinity, and the m-derived section stays
+almost flat across the passband.
+
+54
+00:05:45,026 --> 00:05:51,666
+The program terminates the filter with the
+image impedance at omega equals 0.6.
+
+55
+00:05:51,766 --> 00:05:58,833
+A plain pi ladder gives Z-zero of 40
+ohms, matching source to load.
+
+56
+00:05:58,933 --> 00:06:04,719
+With a pi input and a T output, the filter
+also transforms impedance:
+
+57
+00:06:04,819 --> 00:06:07,023
+50 ohms in, 32 ohms out.
+
+58
+00:06:07,123 --> 00:06:08,900
+T to pi yields 78 ohms.
+
+59
+00:06:11,000 --> 00:06:18,984
+The Table page lists every element with its
+value, strip width, and length, ready for
+the board.
+
+60
+00:06:19,084 --> 00:06:22,858
+Below it are the automatic feasibility
+checks:
+
+61
+00:06:22,958 --> 00:06:36,416
+sections longer than a wavelength over
+eight, lines outside the etchable range,
+coupled-line bandwidths above thirty
+percent, and parts too small to be reliable.
+
+62
+00:06:36,516 --> 00:06:37,847
+And the exports:
+
+63
+00:06:37,947 --> 00:06:51,995
+a DXF layout in millimeters, a KiCad
+footprint, a SPICE netlist, a Touchstone S2P
+file, a CSV table, a PNG image, and a design
+file or link that restores every setting.
+
+64
+00:06:52,095 --> 00:06:58,900
+So you can go from an idea to a
+manufacturable layout without leaving the
+browser.
+
+65
+00:07:01,000 --> 00:07:04,749
+The theory page documents every formula:
+
+66
+00:07:04,849 --> 00:07:17,257
+symbols, prototype synthesis, terminations,
+the band-pass equations, the microstrip
+model, network analysis, and a worked
+example.
+
+67
+00:07:17,357 --> 00:07:28,900
+The references run from Zobel and Richards
+to Cohn, Matthaei, Young and Jones, Wheeler,
+Hammerstad and Jensen, and Pozar.
+
+68
+00:07:31,000 --> 00:07:34,083
+From specification to layout:
+
+69
+00:07:34,183 --> 00:07:40,888
+LC values, microstrip dimensions, exact
+response, and exports.
+
+70
+00:07:40,988 --> 00:07:48,900
+Pick a filter, change a number, and watch
+the layout and response follow.
