@@ -95,6 +95,76 @@ body.mfc-standalone,
   text-decoration: underline;
 }
 
+.mfc-watch-video {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #087f5b;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mfc-watch-video:hover {
+  background: #066448;
+}
+
+.mfc-video-overlay {
+  width: min(920px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100vh - 32px);
+  margin: auto;
+  padding: 20px;
+  border: 0;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.mfc-video-overlay::backdrop {
+  background: rgba(15, 23, 42, 0.72);
+}
+
+.mfc-video-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.mfc-video-header h2 {
+  margin: 0 0 4px;
+  color: var(--primary);
+  font-size: 18px;
+}
+
+.mfc-video-header p,
+.mfc-video-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.mfc-video-overlay video {
+  display: block;
+  width: 100%;
+  max-height: calc(100vh - 150px);
+  background: #000;
+  border-radius: var(--radius-sm);
+}
+
+.mfc-video-status:not(:empty) {
+  margin-top: 10px;
+}
+
 .mfc-app-container button.btn.mfc-print-mobile {
   display: none;
 }
@@ -595,6 +665,8 @@ table.mfc-table tr:hover td {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .mfc-header {
+    position: relative;
+    min-height: 48px;
     flex-direction: column;
     align-items: flex-start;
     padding: 10px 14px;
@@ -602,13 +674,55 @@ table.mfc-table tr:hover td {
   }
   .mfc-header h1 {
     font-size: 17px;
-    white-space: nowrap;
+    padding-right: 50px;
   }
   .mfc-header .mfc-subtitle {
     display: none;
   }
   .mfc-header .mfc-print-header {
     display: none;
+  }
+  .mfc-watch-video {
+    position: absolute;
+    top: 2px;
+    right: 10px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: transparent;
+  }
+  .mfc-watch-video:hover {
+    background: transparent;
+  }
+  .mfc-watch-video span[aria-hidden] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #087f5b;
+    color: #fff;
+    font-size: 11px;
+  }
+  .mfc-watch-video:hover span[aria-hidden] {
+    background: #066448;
+  }
+  .mfc-watch-video:focus:not(:focus-visible) {
+    outline: none;
+  }
+  .mfc-watch-label,
+  .mfc-video-header p {
+    display: none;
+  }
+  .mfc-video-overlay {
+    padding: 14px;
+  }
+  .mfc-video-header h2 {
+    font-size: 16px;
+  }
+  .mfc-video-overlay video {
+    max-height: 35vh;
   }
   .mfc-user-meta {
     width: 100%;

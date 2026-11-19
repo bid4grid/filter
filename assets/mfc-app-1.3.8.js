@@ -1353,6 +1353,62 @@
     // App Wrapper
     var root = h('div', { class: 'mfc-app-container' });
 
+    var walkthroughButton;
+    var walkthroughDialog;
+    if (!CFG.embedded && CFG.walkthroughUrl) {
+      var walkthroughStatus = h('p', { class: 'mfc-video-status', 'aria-live': 'polite' });
+      var walkthroughVideo = h('video', {
+        controls: '', playsinline: '', preload: 'none',
+        onplaying: function () { walkthroughStatus.textContent = ''; },
+        onerror: function () { walkthroughStatus.textContent = 'The walkthrough video could not be loaded.'; }
+      }, 'Your browser does not support HTML video.');
+      var closeWalkthrough = h('button', {
+        type: 'button', class: 'btn sm outline', 'aria-label': 'Close walkthrough',
+        onclick: function () { walkthroughDialog.close(); }
+      }, 'Close');
+      walkthroughDialog = h('dialog', {
+        class: 'mfc-video-overlay', 'aria-label': 'Microstrip Filter Calculator Walkthrough',
+        onclick: function (event) {
+          if (event.target === walkthroughDialog) walkthroughDialog.close();
+        },
+        onkeydown: function (event) {
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            walkthroughDialog.close();
+          }
+        },
+        onclose: function () {
+          walkthroughVideo.pause();
+          walkthroughStatus.textContent = '';
+          walkthroughButton.focus();
+        }
+      },
+        h('div', { class: 'mfc-video-header' },
+          h('div', {},
+            h('h2', {}, 'Microstrip Filter Calculator Walkthrough'),
+            h('p', {}, 'Use the video controls to pause or adjust playback.')
+          ),
+          closeWalkthrough
+        ),
+        walkthroughVideo,
+        walkthroughStatus
+      );
+      walkthroughButton = h('button', {
+        type: 'button', class: 'mfc-watch-video', 'aria-label': 'Watch walkthrough',
+        onclick: function () {
+          walkthroughVideo.volume = 0.15;
+          if (!walkthroughVideo.hasAttribute('src')) walkthroughVideo.src = CFG.walkthroughUrl;
+          walkthroughDialog.showModal();
+          closeWalkthrough.focus();
+          walkthroughVideo.play().catch(function () {
+            if (walkthroughDialog.open && !walkthroughVideo.error) {
+              walkthroughStatus.textContent = 'Playback did not start. Press Play in the video controls to try again.';
+            }
+          });
+        }
+      }, h('span', { 'aria-hidden': 'true' }, '▶'), h('span', { class: 'mfc-watch-label' }, 'Walkthrough'));
+    }
+
     // Header (matching tshirt-quilt-tracker)
     if (!CFG.embedded) {
       var header = h('header', { class: 'mfc-header' },
@@ -1363,6 +1419,7 @@
           )
         ),
         h('div', { class: 'mfc-user-meta' },
+          walkthroughButton,
           CFG.user ? h('span', {}, 'User: ', h('strong', {}, CFG.user)) : null,
           CFG.homeUrl ? h('a', { href: CFG.homeUrl }, 'Home') : null,
           CFG.logout ? h('a', { href: CFG.logout }, 'Log out') : null,
@@ -2314,6 +2371,7 @@
       )
     );
     root.appendChild(printReport);
+    if (walkthroughDialog) root.appendChild(walkthroughDialog);
     container.appendChild(root);
 
     // Accessibility pass: tab semantics and accessible names for form controls
